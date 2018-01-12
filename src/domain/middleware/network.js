@@ -18,13 +18,12 @@
 
 import axios from 'axios';
 
-import { fromJS } from 'immutable';
 import getLogger from 'domain/logger';
 
 import { store } from 'domain/store/main';
 import { updateAllItemsAction, updateFilteredItemsAction, displayDetailAction } from 'domain/store/actions/main';
 
-import type { Item, DetailItemFromNetwork } from 'domain/store/state/main';
+import type { Item, DetailItemFromNetwork, DetailItem } from 'domain/store/state/main';
 
 const logger = getLogger('Middleware/network');
 
@@ -57,10 +56,15 @@ export function onListFromNetwork(list: Array<Item>) {
   store.dispatch(updateFilteredItemsAction(list));
 }
 
-function camelCaseImageFront(detail: DetailItemFromNetwork) {
-  return fromJS(detail)
-    .setIn(['sprites', 'frontDefault'], detail.sprites.front_default)
-    .toJS();
+function camelCaseImageFront(detail: DetailItemFromNetwork): DetailItem {
+  return {
+    name: detail.name,
+    weight: detail.weight,
+    height: detail.height,
+    sprites: {
+      frontDefault: detail.sprites.front_default,
+    },
+  };
 }
 
 export function onDetailFromNetwork(detail: DetailItemFromNetwork) {
